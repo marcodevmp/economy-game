@@ -1,5 +1,5 @@
 // ============================================================
-// ECONOMY OPS - MOTOR DO JOGO (v0.5 MVP)
+// ECONOMY OPS - MOTOR DO JOGO (v0.6 MVP)
 // ============================================================
 
 const state = {
@@ -8,8 +8,7 @@ const state = {
     gdpGrowth: 2.00,
     creditCost: 15.00,
     publicDebt: 60.00,
-    // [ALTERADO] welfare agora representa "Nível de Emprego e Renda"
-    employment: 50.00, 
+    employment: 50.00, // Nível de Emprego e Renda
     turn: 1,
     maxTurns: 6,
     gameActive: false,
@@ -24,7 +23,6 @@ const nextTurnBtn = document.getElementById('next-turn-btn');
 const turnDisplay = document.getElementById('turn-display');
 const newsFeed = document.getElementById('news-feed');
 
-// Mantive os IDs val-welfare e bar-welfare no HTML para não quebrar a referência
 const ui = {
     inflation: { val: document.getElementById('val-inflation'), bar: document.getElementById('bar-inflation') },
     gdp: { val: document.getElementById('val-gdp'), bar: document.getElementById('bar-gdp') },
@@ -97,6 +95,40 @@ function showTutorial() {
     document.getElementById('tutorial-modal').classList.add('active');
 }
 
+// [NOVO] Funções do Modal de Fundamentos
+function showFundamentals() {
+    document.getElementById('fundamentals-modal').classList.add('active');
+    // Reseta para a primeira aba ao abrir
+    const firstTab = document.querySelector('.tab-btn');
+    if (firstTab) {
+        // Simula um clique na primeira aba para garantir que o conteúdo correto apareça
+        firstTab.click();
+    }
+}
+
+function closeFundamentalsModal() {
+    document.getElementById('fundamentals-modal').classList.remove('active');
+}
+
+// [NOVO] Lógica das Abas
+function openTab(evt, tabName) {
+    // Esconde todos os conteúdos de aba
+    const tabContents = document.getElementsByClassName("tab-content");
+    for (let i = 0; i < tabContents.length; i++) {
+        tabContents[i].classList.remove("active");
+    }
+
+    // Remove a classe "active" de todos os botões de aba
+    const tabBtns = document.getElementsByClassName("tab-btn");
+    for (let i = 0; i < tabBtns.length; i++) {
+        tabBtns[i].classList.remove("active");
+    }
+
+    // Mostra a aba atual e adiciona a classe "active" ao botão clicado
+    document.getElementById(tabName).classList.add("active");
+    evt.currentTarget.classList.add("active");
+}
+
 function resetGame() {
     if (!confirm("Tem certeza que deseja reiniciar? Todo o progresso será perdido.")) return;
     
@@ -155,22 +187,16 @@ function advanceTurn() {
     state.publicDebt += debtServiceCost * 2; 
     state.publicDebt = Math.min(120.0, state.publicDebt);
 
-    // ============================================================
-    // [ALTERADO] 5. Nível de Emprego e Renda (Curva de Phillips)
-    // ============================================================
+    // 5. Nível de Emprego e Renda (Curva de Phillips)
     let employmentChange = 0;
 
-    // Efeito do PIB no Emprego (Crescimento gera contratações)
-    if (state.gdpGrowth > 2.5) employmentChange += 3; // Economia aquecida
-    else if (state.gdpGrowth < 1.0) employmentChange -= 4; // Economia fraca gera desemprego
+    if (state.gdpGrowth > 2.5) employmentChange += 3;
+    else if (state.gdpGrowth < 1.0) employmentChange -= 4;
 
-    // Efeito da Inflação no Poder de Compra (Renda)
-    if (state.inflation > 6.0) employmentChange -= 3; // Inflação alta corrói o salário real
-    else if (state.inflation > 4.0) employmentChange -= 1; // Inflação acima da meta incomoda
-    else if (state.inflation < 3.0) employmentChange += 1; // Inflação controlada mantém o poder de compra
+    if (state.inflation > 6.0) employmentChange -= 3;
+    else if (state.inflation > 4.0) employmentChange -= 1;
+    else if (state.inflation < 3.0) employmentChange += 1;
 
-    // Efeito dos Juros no Custo do Crédito (que afeta contratações)
-    // Juros muito altos (>14%) travam a economia e aumentam o desemprego
     if (newRate > 14.0) employmentChange -= 2; 
 
     state.employment = Math.max(0, Math.min(100, state.employment + employmentChange));
@@ -267,7 +293,7 @@ function closeShockModal() {
 }
 
 // ============================================================
-// SISTEMA DE DICAS (Contextualizado com Emprego)
+// SISTEMA DE DICAS (Contextualizado)
 // ============================================================
 function showHint() {
     if (!state.gameActive) return;
@@ -340,7 +366,6 @@ function updateUI() {
     ui.gdp.val.textContent = state.gdpGrowth.toFixed(2) + '%';
     ui.credit.val.textContent = state.creditCost.toFixed(2) + '%';
     ui.debt.val.textContent = state.publicDebt.toFixed(2) + '%';
-    // [ALTERADO] Mostra o Emprego e Renda
     ui.employment.val.textContent = state.employment.toFixed(2) + '%';
 
     updateBar(ui.inflation.bar, state.inflation, 20, '#ff9f43', '#ff3366', 6.0, 2.0);
@@ -348,7 +373,7 @@ function updateUI() {
     updateBar(ui.credit.bar, state.creditCost, 25, '#00d2ff', '#ff9f43', 20.0, 10.0);
     updateBar(ui.debt.bar, state.publicDebt, 100, '#00d2ff', '#ff3366', 80.0, 50.0);
     
-    // [ALTERADO] Emprego: quanto maior, melhor. Cor de perigo é quando está baixo (<40%).
+    // Emprego: quanto maior, melhor. Cor de perigo é quando está baixo (<40%).
     updateBar(ui.employment.bar, state.employment, 100, '#00ff87', '#ff3366', 40.0, 70.0); 
 }
 
@@ -434,7 +459,6 @@ function generateNews(chosenRate) {
         explanation = "Quando o PIB cresce muito rápido, a economia se aquece. As fábricas não conseguem produzir o suficiente para atender a demanda, e os preços começam a subir (inflação de demanda).";
     }
 
-    // [ALTERADO] Notícia específica para o Emprego
     if (state.employment < 40.0) {
         news.push("Trabalho: Taxa de desemprego preocupa. Famílias perdem poder de compra.");
         type = 'alert';
@@ -468,7 +492,7 @@ function checkCrisisEvents() {
         triggerEventModal("CALOTE DA DÍVIDA", "O Estado não consegue mais rolar sua dívida. Os juros altos sugam todo o orçamento público. Crise fiscal instaurada.", "danger");
     } else if (state.gdpGrowth <= -2.0) {
         triggerEventModal("RECESSÃO PROFUNDA", "A economia encolheu drasticamente. O desemprego explodiu e a população exige intervenção imediata.", "danger");
-    } else if (state.employment <= 20.0) { // [ALTERADO] Crise de Emprego
+    } else if (state.employment <= 20.0) {
         triggerEventModal("CRISE SOCIAL", "O desemprego atingiu níveis insustentáveis. A população está nas ruas e o governo perdeu o apoio. É preciso mudar de estratégia urgentemente.", "danger");
     }
 }
@@ -510,7 +534,6 @@ function endGame() {
 
     if (state.publicDebt > 80) finalMessage += "A dívida pública explodiu. ";
     
-    // [ALTERADO] Análise de Emprego
     if (state.employment > 60) finalMessage += "O nível de emprego e renda está bom! A população agradece.";
     else if (state.employment > 40) finalMessage += "O emprego está razoável, mas poderia ser melhor.";
     else finalMessage += "O desemprego está alto. A população está insatisfeita.";

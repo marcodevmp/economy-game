@@ -12,7 +12,7 @@
 <body>
 
     <!-- ============================================================ -->
-    <!-- MODAL DE TUTORIAL INICIAL (Refinado com Explicações)         -->
+    <!-- MODAL DE TUTORIAL INICIAL                                    -->
     <!-- ============================================================ -->
     <div class="modal-overlay active" id="tutorial-modal">
         <div class="modal-box" id="tutorial-content" style="max-width: 600px;">
@@ -32,6 +32,84 @@
     </div>
 
     <!-- ============================================================ -->
+    <!-- MODAL DE FUNDAMENTOS (SAIBA MAIS)                            -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay" id="fundamentals-modal">
+        <div class="modal-box" id="fundamentals-content" style="max-width: 700px; text-align: left;">
+            <h2 style="text-align: center; margin-bottom: 20px;">📖 FUNDAMENTOS ECONÔMICOS</h2>
+            
+            <!-- Abas de Navegação -->
+            <div class="tabs-container">
+                <!-- [NOVO] Aba inicial sobre o conceito de Juros -->
+                <button class="tab-btn active" onclick="openTab(event, 'tab-juros')">O que são Juros?</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-selic')">Taxa Selic</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-inflacao')">Juros x Inflação</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-reais')">Juros Nominais x Reais</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-emprego')">Juros x Emprego</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-divida')">Juros x Dívida</button>
+                <button class="tab-btn" onclick="openTab(event, 'tab-choques')">Choques Externos</button>
+            </div>
+
+            <!-- Conteúdo das Abas -->
+            
+            <!-- [NOVO] Aba: O que são Juros? -->
+            <div id="tab-juros" class="tab-content active" style="font-size: 0.9rem; line-height: 1.6;">
+                <h3>O que são Juros?</h3>
+                <p>Juros são o <strong>preço do dinheiro no tempo</strong>. Quando alguém empresta dinheiro, está abrindo mão de consumir hoje para consumir no futuro. Os juros são a compensação por essa espera e pelo risco de não receber de volta.</p>
+                <p>Imagine que você tem R$ 100 hoje. Se você emprestar esse dinheiro a alguém por um ano e receber R$ 110 de volta, os R$ 10 extras são os juros (10% ao ano).</p>
+                <p><strong>Quem paga e quem recebe?</strong><br>
+                • <strong>Tomador:</strong> Paga juros pelo privilégio de usar o dinheiro agora (ex: empréstimo, financiamento).<br>
+                • <strong>Poupador/Investidor:</strong> Recebe juros por abrir mão do consumo presente (ex: poupança, títulos públicos).</p>
+                <p><strong>No jogo:</strong> Você, como Banco Central, define a taxa básica de juros (Selic). Ela funciona como um "preço mínimo" para o dinheiro na economia, influenciando todos os outros empréstimos e investimentos.</p>
+            </div>
+
+            <div id="tab-selic" class="tab-content" style="font-size: 0.9rem; line-height: 1.6;">
+                <h3>O que é a Taxa Selic?</h3>
+                <p>A Selic é a <strong>taxa básica de juros</strong> da economia brasileira. Ela é definida pelo Banco Central e serve de referência para todos os outros juros do país (empréstimos, financiamentos, cartão de crédito).</p>
+                <p><strong>No jogo:</strong> É a única ferramenta que você controla. Quando você a altera, todos os outros indicadores reagem em cadeia.</p>
+            </div>
+
+            <div id="tab-inflacao" class="tab-content" style="font-size: 0.9rem; line-height: 1.6;">
+                <h3>Juros x Inflação (A Gangorra)</h3>
+                <p>A inflação é o aumento contínuo dos preços. Para controlá-la, o Banco Central usa os juros. Se a inflação está alta, o BC <strong>aumenta os juros</strong> para esfriar o consumo e a demanda, fazendo os preços caírem.</p>
+                <p><strong>No jogo:</strong> Se a inflação passar de 6%, tente subir os juros. Mas cuidado: juros altos também travam o PIB.</p>
+            </div>
+
+            <div id="tab-reais" class="tab-content" style="font-size: 0.9rem; line-height: 1.6;">
+                <h3>Juros Nominais x Juros Reais</h3>
+                <p><strong>Juro Nominal:</strong> É o número que aparece no contrato (ex: 10% ao ano). É o que você controla no jogo (a Selic).</p>
+                <p><strong>Juro Real:</strong> É o juro <em>descontado da inflação</em>. É o que realmente importa para a economia! Ele mostra o ganho real de quem empresta e o custo real de quem toma emprestado.</p>
+                <p><strong>Fórmula de Fisher (Simplificada):</strong><br>
+                <code style="background: rgba(0,0,0,0.3); padding: 2px 5px; border-radius: 3px; color: var(--neon-orange);">Juro Real ≈ Juro Nominal - Inflação</code></p>
+                <p><strong>Exemplo prático:</strong> Se você definir a Selic em <strong>10%</strong> e a inflação estiver em <strong>8%</strong>, o juro real será de apenas <strong>2%</strong>. A economia não sente um "freio" forte. Mas se a inflação cair para <strong>2%</strong> com a mesma Selic de 10%, o juro real sobe para <strong>8%</strong>, travando a economia de verdade!</p>
+                <p><strong>No jogo:</strong> Fique atento! O efeito dos juros no PIB e no Emprego depende do Juro Real, não apenas do número que você vê no slider.</p>
+            </div>
+
+            <div id="tab-emprego" class="tab-content" style="font-size: 0.9rem; line-height: 1.6;">
+                <h3>Juros x Emprego (Curva de Phillips)</h3>
+                <p>Existe uma relação inversa entre inflação e desemprego. Quando a economia cresce (PIB alto), as empresas contratam mais, gerando empregos. Mas se a economia estiver muito aquecida, isso gera inflação.</p>
+                <p><strong>No jogo:</strong> O indicador de "Emprego e Renda" sobe quando o PIB cresce, mas cai se a inflação estiver alta (pois corrói o salário do trabalhador).</p>
+            </div>
+
+            <div id="tab-divida" class="tab-content" style="font-size: 0.9rem; line-height: 1.6;">
+                <h3>Juros x Dívida Pública</h3>
+                <p>A dívida pública é o que o governo deve. Quando os juros sobem, o governo precisa pagar mais juros sobre essa dívida, aumentando o rombo nas contas públicas.</p>
+                <p><strong>No jogo:</strong> Se você mantiver os juros muito altos por muito tempo, a Dívida Pública vai crescer. Se ela passar de 80%, é sinal de perigo.</p>
+            </div>
+
+            <div id="tab-choques" class="tab-content" style="font-size: 0.9rem; line-height: 1.6;">
+                <h3>Choques Externos</h3>
+                <p>A economia não é uma ilha. Eventos como crises internacionais, pandemias ou avanços tecnológicos afetam a inflação e o PIB, independentemente da sua decisão de juros.</p>
+                <p><strong>No jogo:</strong> Fique atento aos pop-ups de "Evento Inesperado". Eles exigem que você adapte sua estratégia. Uma crise do petróleo, por exemplo, gera inflação de custos, que é mais difícil de combater só com juros.</p>
+            </div>
+
+            <div style="text-align: center; margin-top: 20px;">
+                <button class="btn-modal" onclick="closeFundamentalsModal()">Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
     <!-- MODAL DE EVENTO INESPERADO (SHOCK)                           -->
     <!-- ============================================================ -->
     <div class="modal-overlay" id="shock-modal">
@@ -47,7 +125,7 @@
     </div>
 
     <!-- ============================================================ -->
-    <!-- MODAL DE RELATÓRIO / DICA (Existente)                        -->
+    <!-- MODAL DE RELATÓRIO / DICA                                    -->
     <!-- ============================================================ -->
     <div class="modal-overlay" id="report-modal">
         <div class="modal-box" id="report-modal-content" style="max-width: 600px;">
@@ -71,12 +149,11 @@
     <div class="game-container">
         <!-- Cabeçalho -->
         <div class="header panel">
-            <h1>ECONOMY OPS <span style="color:var(--text-muted); font-size: 0.8rem;">v0.5 MVP</span></h1>
-            <div style="display: flex; gap: 20px; align-items: center;">
+            <h1>ECONOMY OPS <span style="color:var(--text-muted); font-size: 0.8rem;">v0.8 MVP</span></h1>
+            <div style="display: flex; gap: 15px; align-items: center;">
                 <div class="turn-display" id="turn-display">MANDATO: 1 / 6</div>
-                <!-- Botão de Ajuda (Tutorial) -->
+                <button class="btn-fundamentals" onclick="showFundamentals()" title="Saiba Mais sobre Economia">📖 Fundamentos</button>
                 <button class="btn-help" onclick="showTutorial()" title="Como Jogar">?</button>
-                <!-- Botão de Reiniciar -->
                 <button class="btn-reset" onclick="resetGame()" title="Reiniciar Jogo">↻</button>
             </div>
         </div>
@@ -119,13 +196,11 @@
                 <div class="progress-bar"><div class="progress-fill fill-red" id="bar-debt" style="width: 60%;"></div></div>
             </div>
 
-            <!-- [ALTERADO] Indicador de Emprego e Renda (Antigo Bem-Estar) -->
             <div class="gauge-card" style="grid-column: 1 / -1; border-left: 4px solid var(--neon-green);">
                 <div class="gauge-header">
                     <span>Nível de Emprego e Renda</span>
                     <span>Situação do Trabalhador</span>
                 </div>
-                <!-- Mantido o ID val-welfare para compatibilidade com o JS/CSS -->
                 <div class="gauge-value" id="val-welfare">50.00%</div>
                 <div class="progress-bar"><div class="progress-fill fill-green" id="bar-welfare" style="width: 50%;"></div></div>
             </div>
