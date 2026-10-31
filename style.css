@@ -1,0 +1,490 @@
+/* ============================================================
+   VARIÁVEIS E RESET
+   ============================================================ */
+:root {
+    --bg-dark: #0a0f18;
+    --bg-panel: #141e30;
+    --bg-panel-light: #1d2d4a;
+    --text-main: #e0e6ed;
+    --text-muted: #8395a7;
+    --neon-blue: #00d2ff;
+    --neon-green: #00ff87;
+    --neon-red: #ff3366;
+    --neon-orange: #ff9f43;
+    --border-color: #2a3b5c;
+    --glow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
+
+body {
+    font-family: 'Roboto Mono', monospace;
+    background-color: var(--bg-dark);
+    background-image: 
+        linear-gradient(rgba(10, 15, 24, 0.9), rgba(10, 15, 24, 0.9)),
+        repeating-linear-gradient(0deg, transparent, transparent 1px, #1d2d4a 1px, #1d2d4a 2px);
+    background-size: 100% 100%, 100% 4px;
+    color: var(--text-main);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    overflow: hidden;
+}
+
+/* ============================================================
+   LAYOUT PRINCIPAL
+   ============================================================ */
+.game-container {
+    width: 100%;
+    max-width: 1100px;
+    height: 90vh;
+    max-height: 800px;
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    grid-template-rows: 80px 1fr 120px;
+    gap: 15px;
+    padding: 20px;
+    position: relative;
+}
+
+.panel {
+    background: var(--bg-panel);
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    box-shadow: inset 0 0 20px rgba(0,0,0,0.5);
+    position: relative;
+    overflow: hidden;
+}
+
+.panel::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; width: 100%; height: 2px;
+    background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+    opacity: 0.5;
+}
+
+/* ============================================================
+   CABEÇALHO
+   ============================================================ */
+.header {
+    grid-column: 1 / -1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 25px;
+}
+
+.header h1 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 1.5rem;
+    color: var(--neon-blue);
+    text-shadow: var(--glow);
+    letter-spacing: 2px;
+}
+
+.turn-display {
+    font-size: 1.2rem;
+    color: var(--neon-orange);
+    font-weight: bold;
+}
+
+/* ============================================================
+   BOTÕES DO CABEÇALHO (Reset e Ajuda)
+   ============================================================ */
+.btn-help, .btn-reset {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 1.1rem;
+    width: 35px;
+    height: 35px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+}
+
+.btn-help:hover {
+    color: var(--neon-blue);
+    border-color: var(--neon-blue);
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.3);
+}
+
+.btn-reset:hover {
+    color: var(--neon-red);
+    border-color: var(--neon-red);
+    box-shadow: 0 0 10px rgba(255, 51, 102, 0.3);
+}
+
+/* ============================================================
+   ÁREA CENTRAL (MEDIDORES)
+   ============================================================ */
+.gauges-area {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    padding: 20px;
+}
+
+.gauge-card {
+    background: var(--bg-panel-light);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.gauge-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.gauge-value {
+    font-size: 1.8rem;
+    font-weight: bold;
+    color: var(--text-main);
+    text-shadow: 0 0 5px rgba(255,255,255,0.2);
+}
+
+.progress-bar {
+    width: 100%;
+    height: 8px;
+    background: #000;
+    border-radius: 4px;
+    margin-top: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 50%;
+    transition: width 0.5s ease-out, background-color 0.3s;
+}
+
+/* Cores dos Medidores */
+.fill-blue { background: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }
+.fill-green { background: var(--neon-green); box-shadow: 0 0 10px var(--neon-green); }
+.fill-red { background: var(--neon-red); box-shadow: 0 0 10px var(--neon-red); }
+.fill-orange { background: var(--neon-orange); box-shadow: 0 0 10px var(--neon-orange); }
+
+/* ============================================================
+   CONSOLE DE NOTÍCIAS (LATERAL)
+   ============================================================ */
+.news-console {
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+}
+
+.news-console h3 {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.9rem;
+    color: var(--neon-blue);
+    margin-bottom: 15px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.news-feed {
+    flex-grow: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    font-size: 0.85rem;
+    padding-right: 5px;
+}
+
+.news-item {
+    padding: 10px;
+    background: rgba(0,0,0,0.3);
+    border-left: 3px solid var(--text-muted);
+    border-radius: 4px;
+    line-height: 1.4;
+    animation: slideIn 0.3s ease-out;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+.news-item.alert { border-left-color: var(--neon-red); color: #ffcccc; }
+.news-item.success { border-left-color: var(--neon-green); color: #ccffdd; }
+.news-item.info { border-left-color: var(--neon-blue); color: #cceeff; }
+
+/* Botão de Info dentro da Notícia */
+.btn-info-news {
+    background: transparent;
+    border: 1px solid var(--text-muted);
+    color: var(--text-muted);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.7rem;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-shrink: 0;
+    transition: all 0.2s;
+}
+
+.btn-info-news:hover {
+    border-color: var(--neon-blue);
+    color: var(--neon-blue);
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+}
+
+/* ============================================================
+   ÁREA DE CONTROLE (RODAPÉ)
+   ============================================================ */
+.control-area {
+    grid-column: 1 / -1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+}
+
+.rate-control {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.rate-display {
+    font-family: 'Orbitron', sans-serif;
+    font-size: 2.5rem;
+    color: var(--neon-orange);
+    width: 150px;
+    text-align: center;
+}
+
+input[type="range"] {
+    -webkit-appearance: none;
+    width: 300px;
+    height: 10px;
+    background: #000;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    outline: none;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: var(--neon-orange);
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 0 15px var(--neon-orange);
+    transition: transform 0.1s;
+}
+
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+}
+
+/* ============================================================
+   BOTÕES DE AÇÃO
+   ============================================================ */
+.btn-hint {
+    font-family: 'Orbitron', sans-serif;
+    background: transparent;
+    color: var(--neon-blue);
+    border: 2px solid var(--neon-blue);
+    padding: 15px 20px;
+    font-size: 1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(0, 210, 255, 0.2);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.btn-hint:hover {
+    background: var(--neon-blue);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px rgba(0, 210, 255, 0.6);
+}
+
+.btn-hint:disabled {
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+    background: transparent;
+}
+
+.btn-action {
+    font-family: 'Orbitron', sans-serif;
+    background: transparent;
+    color: var(--neon-green);
+    border: 2px solid var(--neon-green);
+    padding: 15px 30px;
+    font-size: 1.1rem;
+    font-weight: bold;
+    border-radius: 6px;
+    cursor: pointer;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    transition: all 0.2s;
+    box-shadow: 0 0 10px rgba(0, 255, 135, 0.2);
+}
+
+.btn-action:hover {
+    background: var(--neon-green);
+    color: var(--bg-dark);
+    box-shadow: 0 0 20px rgba(0, 255, 135, 0.6);
+}
+
+.btn-action:disabled {
+    border-color: var(--text-muted);
+    color: var(--text-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+    background: transparent;
+}
+
+/* ============================================================
+   MODAIS (POP-UPS)
+   ============================================================ */
+.modal-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.85);
+    backdrop-filter: blur(5px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s;
+}
+
+.modal-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.modal-box {
+    background: var(--bg-panel);
+    border: 2px solid var(--neon-blue);
+    box-shadow: 0 0 30px rgba(0, 210, 255, 0.3);
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 500px;
+    text-align: center;
+    transform: translateY(20px);
+    transition: transform 0.3s;
+}
+
+.modal-overlay.active .modal-box {
+    transform: translateY(0);
+}
+
+.modal-box h2 {
+    font-family: 'Orbitron', sans-serif;
+    color: var(--neon-blue);
+    margin-bottom: 15px;
+    font-size: 1.4rem;
+}
+
+.modal-box p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    color: var(--text-main);
+}
+
+.modal-box .btn-modal {
+    background: var(--neon-blue);
+    color: var(--bg-dark);
+    border: none;
+    padding: 10px 25px;
+    font-family: 'Orbitron', sans-serif;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+
+.modal-box .btn-modal:hover {
+    background: #fff;
+    box-shadow: 0 0 15px #fff;
+}
+
+/* ============================================================
+   ANIMAÇÕES
+   ============================================================ */
+@keyframes slideIn {
+    from { opacity: 0; transform: translateX(20px); }
+    to { opacity: 1; transform: translateX(0); }
+}
+
+@keyframes pulse-red {
+    0% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0.7); }
+    70% { box-shadow: 0 0 0 15px rgba(255, 51, 102, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(255, 51, 102, 0); }
+}
+
+.pulse-danger {
+    animation: pulse-red 1.5s infinite;
+}
+
+/* ============================================================
+   SCROLLBAR CUSTOMIZADA
+   ============================================================ */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: var(--bg-dark); }
+::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--neon-blue); }
+
+/* ============================================================
+   RESPONSIVIDADE (Para telas menores)
+   ============================================================ */
+@media (max-width: 900px) {
+    .game-container {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto auto;
+        height: auto;
+        max-height: none;
+        overflow-y: auto;
+    }
+    .control-area {
+        flex-direction: column;
+        gap: 15px;
+        padding: 20px;
+    }
+    .rate-control {
+        flex-direction: column;
+        width: 100%;
+    }
+    input[type="range"] {
+        width: 100%;
+    }
+    .gauges-area {
+        grid-template-columns: 1fr;
+    }
+}

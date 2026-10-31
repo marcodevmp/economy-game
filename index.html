@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Economy Ops: Gestor Monetário</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto+Mono:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!-- MODAL DE TUTORIAL INICIAL (Refinado com Explicações)         -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay active" id="tutorial-modal">
+        <div class="modal-box" id="tutorial-content" style="max-width: 600px;">
+            <h2>SISTEMA INICIADO</h2>
+            <p>Bem-vindo, Gestor. Você acaba de assumir o comando da <strong>Política Monetária</strong>.</p>
+            <p style="text-align: left; font-size: 0.9rem;">
+                <strong>Seu Objetivo:</strong> Manter a inflação na meta (3.5%) e o PIB saudável, sem deixar a Dívida Pública explodir, garantindo o <strong>Emprego e a Renda</strong> da população.<br><br>
+                <strong>O que cada indicador significa:</strong><br>
+                • <strong>Inflação:</strong> Aumento dos preços. Se subir muito, o povo perde poder de compra.<br>
+                • <strong>PIB:</strong> Riqueza produzida pelo país. Se cair, há desemprego.<br>
+                • <strong>Dívida Pública:</strong> O quanto o Estado deve. Juros altos aumentam essa dívida.<br>
+                • <strong>Emprego e Renda:</strong> Reflete a situação do trabalhador. PIB baixo gera desemprego; inflação alta corrói o salário.<br><br>
+                <strong>Sua Ferramenta:</strong> A Taxa Selic (Juros). Juros baixos estimulam a economia e o emprego, mas geram inflação. Juros altos controlam a inflação, mas travam o crescimento e aumentam o desemprego.
+            </p>
+            <button class="btn-modal" onclick="startGame()">Assumir o Cargo</button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL DE EVENTO INESPERADO (SHOCK)                           -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay" id="shock-modal">
+        <div class="modal-box" id="shock-modal-content" style="max-width: 600px;">
+            <h2 id="shock-title">EVENTO INESPERADO</h2>
+            <p id="shock-desc" style="text-align: left; font-size: 0.9rem;">Descrição do evento.</p>
+            <div style="background: rgba(0,0,0,0.3); padding: 10px; border-radius: 5px; margin-bottom: 20px; text-align: left; border-left: 3px solid var(--neon-orange);">
+                <strong style="color: var(--neon-orange);">Impacto:</strong> <span id="shock-impact"></span><br>
+                <strong style="color: var(--neon-orange);">Por que isso aconteceu?</strong> <span id="shock-explanation"></span>
+            </div>
+            <button class="btn-modal" onclick="closeShockModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL DE RELATÓRIO / DICA (Existente)                        -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay" id="report-modal">
+        <div class="modal-box" id="report-modal-content" style="max-width: 600px;">
+            <h2 id="report-title">RELATÓRIO</h2>
+            <p id="report-desc" style="text-align: left; font-size: 0.9rem;">Análise da situação econômica atual.</p>
+            <button class="btn-modal" onclick="closeReportModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- ============================================================ -->
+    <!-- MODAL DE EVENTO CRÍTICO (Game Over)                          -->
+    <!-- ============================================================ -->
+    <div class="modal-overlay" id="event-modal">
+        <div class="modal-box" id="event-modal-content">
+            <h2 id="event-title">ALERTA</h2>
+            <p id="event-desc">Descrição do evento.</p>
+            <button class="btn-modal" onclick="closeEventModal()">Entendido</button>
+        </div>
+    </div>
+
+    <div class="game-container">
+        <!-- Cabeçalho -->
+        <div class="header panel">
+            <h1>ECONOMY OPS <span style="color:var(--text-muted); font-size: 0.8rem;">v0.5 MVP</span></h1>
+            <div style="display: flex; gap: 20px; align-items: center;">
+                <div class="turn-display" id="turn-display">MANDATO: 1 / 6</div>
+                <!-- Botão de Ajuda (Tutorial) -->
+                <button class="btn-help" onclick="showTutorial()" title="Como Jogar">?</button>
+                <!-- Botão de Reiniciar -->
+                <button class="btn-reset" onclick="resetGame()" title="Reiniciar Jogo">↻</button>
+            </div>
+        </div>
+
+        <!-- Área de Medidores -->
+        <div class="panel gauges-area">
+            <div class="gauge-card">
+                <div class="gauge-header">
+                    <span>Inflação (IPCA)</span>
+                    <span>Meta: 3.5%</span>
+                </div>
+                <div class="gauge-value" id="val-inflation">4.50%</div>
+                <div class="progress-bar"><div class="progress-fill fill-orange" id="bar-inflation" style="width: 45%;"></div></div>
+            </div>
+            
+            <div class="gauge-card">
+                <div class="gauge-header">
+                    <span>Atividade (PIB)</span>
+                    <span>Saudável: > 1.0%</span>
+                </div>
+                <div class="gauge-value" id="val-gdp">2.00%</div>
+                <div class="progress-bar"><div class="progress-fill fill-green" id="bar-gdp" style="width: 40%;"></div></div>
+            </div>
+
+            <div class="gauge-card">
+                <div class="gauge-header">
+                    <span>Custo do Crédito</span>
+                    <span>Pressiona o consumo</span>
+                </div>
+                <div class="gauge-value" id="val-credit">15.00%</div>
+                <div class="progress-bar"><div class="progress-fill fill-blue" id="bar-credit" style="width: 75%;"></div></div>
+            </div>
+
+            <div class="gauge-card">
+                <div class="gauge-header">
+                    <span>Dívida Pública (% PIB)</span>
+                    <span>Perigo: > 80%</span>
+                </div>
+                <div class="gauge-value" id="val-debt">60.00%</div>
+                <div class="progress-bar"><div class="progress-fill fill-red" id="bar-debt" style="width: 60%;"></div></div>
+            </div>
+
+            <!-- [ALTERADO] Indicador de Emprego e Renda (Antigo Bem-Estar) -->
+            <div class="gauge-card" style="grid-column: 1 / -1; border-left: 4px solid var(--neon-green);">
+                <div class="gauge-header">
+                    <span>Nível de Emprego e Renda</span>
+                    <span>Situação do Trabalhador</span>
+                </div>
+                <!-- Mantido o ID val-welfare para compatibilidade com o JS/CSS -->
+                <div class="gauge-value" id="val-welfare">50.00%</div>
+                <div class="progress-bar"><div class="progress-fill fill-green" id="bar-welfare" style="width: 50%;"></div></div>
+            </div>
+        </div>
+
+        <!-- Console de Notícias -->
+        <div class="panel news-console">
+            <h3>> TERMINAL DE NOTÍCIAS</h3>
+            <div class="news-feed" id="news-feed">
+                <div class="news-item info">Sistema online. Aguardando primeira decisão de política monetária...</div>
+            </div>
+        </div>
+
+        <!-- Área de Controle -->
+        <div class="control-area panel">
+            <div class="rate-control">
+                <div>
+                    <div style="font-size: 0.8rem; color: var(--text-muted); text-transform: uppercase;">Taxa Selic</div>
+                    <div class="rate-display" id="rate-display">10.00%</div>
+                </div>
+                <input type="range" id="rate-slider" min="0" max="20" step="0.25" value="10">
+            </div>
+            
+            <div style="display: flex; gap: 10px;">
+                <button class="btn-hint" id="hint-btn" onclick="showHint()">💡 Dica</button>
+                <button class="btn-action" id="next-turn-btn" onclick="advanceTurn()">Executar Mandato</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
