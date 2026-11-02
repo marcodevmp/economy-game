@@ -1,14 +1,10 @@
-// ============================================================
-// GAGORRA DE JUROS
-// ============================================================
-
 const state = {
     currentRate: 10.00,
     inflation: 4.50,
     gdpGrowth: 2.00,
     creditCost: 15.00,
     publicDebt: 60.00,
-    employment: 50.00, // Nível de Emprego e Renda
+
     turn: 1,
     maxTurns: 6,
     gameActive: false,
@@ -31,9 +27,6 @@ const ui = {
     employment: { val: document.getElementById('val-welfare'), bar: document.getElementById('bar-welfare') }
 };
 
-// ============================================================
-// SISTEMA DE EVENTOS COM CONTEXTO
-// ============================================================
 const shocks = [
     {
         id: 'oil_crisis',
@@ -82,9 +75,6 @@ const shocks = [
     }
 ];
 
-// ============================================================
-// INICIALIZAÇÃO E RESET
-// ============================================================
 function startGame() {
     document.getElementById('tutorial-modal').classList.remove('active');
     state.gameActive = true;
@@ -95,13 +85,12 @@ function showTutorial() {
     document.getElementById('tutorial-modal').classList.add('active');
 }
 
-// [NOVO] Funções do Modal de Fundamentos
 function showFundamentals() {
     document.getElementById('fundamentals-modal').classList.add('active');
-    // Reseta para a primeira aba ao abrir
+
     const firstTab = document.querySelector('.tab-btn');
     if (firstTab) {
-        // Simula um clique na primeira aba para garantir que o conteúdo correto apareça
+    
         firstTab.click();
     }
 }
@@ -110,21 +99,20 @@ function closeFundamentalsModal() {
     document.getElementById('fundamentals-modal').classList.remove('active');
 }
 
-// [NOVO] Lógica das Abas
 function openTab(evt, tabName) {
-    // Esconde todos os conteúdos de aba
+
     const tabContents = document.getElementsByClassName("tab-content");
     for (let i = 0; i < tabContents.length; i++) {
         tabContents[i].classList.remove("active");
     }
 
-    // Remove a classe "active" de todos os botões de aba
+
     const tabBtns = document.getElementsByClassName("tab-btn");
     for (let i = 0; i < tabBtns.length; i++) {
         tabBtns[i].classList.remove("active");
     }
 
-    // Mostra a aba atual e adiciona a classe "active" ao botão clicado
+
     document.getElementById(tabName).classList.add("active");
     evt.currentTarget.classList.add("active");
 }
@@ -157,9 +145,6 @@ function resetGame() {
     updateUI();
 }
 
-// ============================================================
-// MOTOR ECONÔMICO (Calibrado)
-// ============================================================
 function advanceTurn() {
     if (!state.gameActive || state.turn > state.maxTurns) return;
 
@@ -167,27 +152,27 @@ function advanceTurn() {
     const previousRate = state.currentRate;
     state.lastAction = { rate: newRate, previousRate: previousRate };
 
-    // 1. Custo do Crédito (Spread bancário)
+
     state.creditCost = newRate + 8.0; 
 
-    // 2. Atividade Econômica (PIB)
+
     const gdpImpact = (10 - newRate) * 0.4; 
     state.gdpGrowth = Math.max(-4.0, Math.min(8.0, (state.gdpGrowth * 0.6) + gdpImpact));
 
-    // 3. Inflação (Inércia + Demanda + Custo)
+
     const inflationPressure = (state.gdpGrowth - 2.0) * 0.5;
     const interestDeflationEffect = (newRate - 10) * 0.15;
     const inertia = state.inflation * 0.7;
     state.inflation = inertia + inflationPressure - interestDeflationEffect;
     state.inflation = Math.max(-2.0, Math.min(20.0, state.inflation));
 
-    // 4. Dívida do Estado (Juro Real)
+
     const realInterest = newRate - state.inflation;
     const debtServiceCost = (realInterest / 100) * 0.5;
     state.publicDebt += debtServiceCost * 2; 
     state.publicDebt = Math.min(120.0, state.publicDebt);
 
-    // 5. Nível de Emprego e Renda (Curva de Phillips)
+
     let employmentChange = 0;
 
     if (state.gdpGrowth > 2.5) employmentChange += 3;
@@ -201,7 +186,7 @@ function advanceTurn() {
 
     state.employment = Math.max(0, Math.min(100, state.employment + employmentChange));
 
-    // Atualiza Estado
+
     state.currentRate = newRate;
     state.turn++;
 
@@ -220,9 +205,6 @@ function advanceTurn() {
     }
 }
 
-// ============================================================
-// GATILHO DE EVENTO ALEATÓRIO (Com Contexto)
-// ============================================================
 function triggerRandomShock() {
     const availableShocks = shocks.filter(s => 
         s.id !== state.lastShockId && s.condition(state)
@@ -235,13 +217,13 @@ function triggerRandomShock() {
     state.lastShockId = shock.id;
     state.lastShock = shock; 
 
-    // Aplica efeito
+
     state.inflation += shock.effect.inflation || 0;
     state.gdpGrowth += shock.effect.gdp || 0;
     state.publicDebt += shock.effect.debt || 0;
     state.employment += shock.effect.employment || 0;
 
-    // Limita
+
     state.inflation = Math.max(-2.0, Math.min(20.0, state.inflation));
     state.gdpGrowth = Math.max(-4.0, Math.min(8.0, state.gdpGrowth));
     state.publicDebt = Math.min(120.0, state.publicDebt);
@@ -251,9 +233,6 @@ function triggerRandomShock() {
     triggerShockModal(shock);
 }
 
-// ============================================================
-// MODAL DE SHOCK
-// ============================================================
 function triggerShockModal(shock) {
     const modal = document.getElementById('shock-modal');
     const titleEl = document.getElementById('shock-title');
@@ -292,9 +271,6 @@ function closeShockModal() {
     document.getElementById('shock-modal').classList.remove('active');
 }
 
-// ============================================================
-// SISTEMA DE DICAS (Contextualizado)
-// ============================================================
 function showHint() {
     if (!state.gameActive) return;
 
@@ -325,9 +301,6 @@ function showHint() {
     triggerReportModal(title, hintMessage, "info");
 }
 
-// ============================================================
-// POP-UP INFORMATIVO / RELATÓRIO
-// ============================================================
 function triggerReportModal(title, message, type = "info") {
     const modal = document.getElementById('report-modal');
     const titleEl = document.getElementById('report-title');
@@ -355,9 +328,6 @@ function closeReportModal() {
     document.getElementById('report-modal').classList.remove('active');
 }
 
-// ============================================================
-// ATUALIZAÇÃO VISUAL
-// ============================================================
 function updateUI() {
     rateDisplay.textContent = state.currentRate.toFixed(2) + '%';
     turnDisplay.textContent = `MANDATO: ${Math.min(state.turn, state.maxTurns)} / ${state.maxTurns}`;
@@ -373,7 +343,7 @@ function updateUI() {
     updateBar(ui.credit.bar, state.creditCost, 25, '#00d2ff', '#ff9f43', 20.0, 10.0);
     updateBar(ui.debt.bar, state.publicDebt, 100, '#00d2ff', '#ff3366', 80.0, 50.0);
     
-    // Emprego: quanto maior, melhor. Cor de perigo é quando está baixo (<40%).
+
     updateBar(ui.employment.bar, state.employment, 100, '#00ff87', '#ff3366', 40.0, 70.0); 
 }
 
@@ -382,7 +352,7 @@ function updateBar(barElement, value, max, colorNormal, colorDanger, dangerThres
     percentage = Math.max(5, Math.min(100, percentage));
     barElement.style.width = percentage + '%';
     
-    // Lógica invertida para o Emprego (quanto menor, pior)
+
     if (barElement.id === 'bar-welfare') {
         if (value < dangerThreshold) {
             barElement.style.backgroundColor = colorDanger;
@@ -402,9 +372,6 @@ function updateBar(barElement, value, max, colorNormal, colorDanger, dangerThres
     }
 }
 
-// ============================================================
-// GERAÇÃO DE NOTÍCIAS (Com Botão de Info)
-// ============================================================
 function addNews(message, type = 'info', explanation = null) {
     const div = document.createElement('div');
     div.className = `news-item ${type}`;
@@ -482,9 +449,6 @@ function generateNews(chosenRate) {
     news.forEach(msg => addNews(msg, type, explanation));
 }
 
-// ============================================================
-// EVENTOS CRÍTICOS (Game Over / Crise)
-// ============================================================
 function checkCrisisEvents() {
     if (state.inflation >= 15.0) {
         triggerEventModal("CRISE INFLACIONÁRIA", "A inflação atingiu dois dígitos e o poder de compra da população despencou. O mercado perdeu a confiança no Banco Central.", "danger");
@@ -515,9 +479,6 @@ function closeEventModal() {
     document.getElementById('event-modal').classList.remove('active');
 }
 
-// ============================================================
-// FIM DE JOGO
-// ============================================================
 function endGame() {
     nextTurnBtn.disabled = true;
     nextTurnBtn.textContent = "MANDATO ENCERRADO";
@@ -541,9 +502,6 @@ function endGame() {
     triggerEventModal("FIM DO MANDATO", finalMessage, "info");
 }
 
-// ============================================================
-// EVENT LISTENERS
-// ============================================================
 rateSlider.addEventListener('input', (e) => {
     rateDisplay.textContent = parseFloat(e.target.value).toFixed(2) + '%';
 });
